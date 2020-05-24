@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.2/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="index.css">
+    <!-- <script src="https://cdnjs.com/libraries/Chart.js"></script> -->
+</head>
+<body>
+  
+  <section class="hero is-success is-fullheight">
+    <div class="hero-body">
+      <div class="hero-container">
+        <h1 class="hero-title">
+          Pandemic Tracker
+        </h1>
+        <h2 class="hero-subtitle">
+          "Stay Home , Stay Safe"
+        </h2>
+        <!-- <div class="icon">
+          <i class="fab fa-github fa-3x"></i>
+        </div> -->
+        
+      </div>
+    </div>
+  </section>
+
+    <div class="body-container">
+        <div class="input-container">
+          <div class="autocomplete"></div>
+          <div class="global-button"><button class="button global is-info">Global</button></div>
+        </div>
+        <div class="info-container">
+            <div class="card">
+                <div class="card-content">
+                  <p class="title confirmed">
+                  </p>
+                  <p class="subtitle">
+                    Confirmed
+                  </p>
+                </div>
+                <footer class="card-footer">
+                  <p class="card-footer-item confirmedfoot">
+                    <span>
+                    </span>
+                  </p>
+                </footer>
+            </div>
+            <div class="card">
+                <div class="card-content">
+                  <p class="title active">
+                  </p>
+                  <p class="subtitle">
+                    Active
+                  </p>
+                </div>
+                <footer class="card-footer">
+                  <p class="card-footer-item activefoot">
+                    <span>
+                    </span>
+                  </p>
+                </footer>
+            </div>
+            <div class="card">
+                <div class="card-content">
+                  <p class="title recovered">
+                  </p>
+                  <p class="subtitle">
+                    Recovered
+                  </p>
+                </div>
+                <footer class="card-footer">
+                  <p class="card-footer-item recoveredfoot">
+                    <span>
+                    </span>
+                  </p>
+                </footer>
+            </div>
+            <div class="card">
+                <div class="card-content">
+                  <p class="title death">
+                  </p>
+                  <p class="subtitle">
+                    Deaths
+                  </p>
+                </div>
+                <footer class="card-footer">
+                  <p class="card-footer-item deathfoot">
+                    <span>
+                    </span>
+                  </p>
+                </footer>
+            </div>
+        </div>
+        <div class="graph-container">
+            <!-- <div><canvas id="myChartp"></canvas></div>
+            <div><canvas id="myChart1"></canvas></div>
+            <div class="small-graph">
+                <div><canvas id="myChart2"></canvas></div>
+                <div><canvas id="myChart3"></canvas></div>
+            </div>
+            <div class="small-graph">
+                <div><canvas id="myChart4"></canvas></div>
+                <div><canvas id="myChart5"></canvas></div>
+            </div> -->
+        </div>
+        <div class="table-container">
+          <div class="table-header"><h1>All Data Summary</h1></div>
+          <table id="example" class="display">
+            <thead>
+              <tr>
+                  <th>Country</th>
+                  <th>Total Confirmed</th>
+                  <th>Total Deaths</th>
+                  <th>Total Recovered</th>
+                  <th>New Confirmed</th>
+                  <th>New Deaths</th>
+                  <th>New Recovered</th>
+              </tr>
+            </thead>
+            <tfoot>
+              <tr>
+                <th>Country</th>
+                <th>Total Confirmed</th>
+                <th>Total Deaths</th>
+                <th>Total Recovered</th>
+                <th>New Confirmed</th>
+                <th>New Deaths</th>
+                <th>New Recovered</th>
+              </tr>
+          </tfoot>
+          </table>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script src="dateformat.js"></script>
+    <script src="commaformat.js"></script>
+    <script src="countries.js"></script>
+    <script src="index.js"></script>
+</body>
+</html>
