@@ -1,8 +1,8 @@
-const fetchData = async (str) =>{
-    const response = await axios.get(`https://api.covid19api.com/${str}`);
-    //console.log(response.data);
+const fetchData = async (str) => {
+    const response = await axios.get(`https://disease.sh/v3/covid-19/${str}`);
+    console.log(response.data);
     return response.data;
-}
+};
 
 let confirmed = document.querySelector(".confirmed");
 let active = document.querySelector(".active");
@@ -14,44 +14,54 @@ let graphContainer = document.querySelector(".graph-container");
 const setData = async (country) =>{
     graphContainer.innerHTML = "";
     let data;
-    response2 = await axios.get("https://api.covid19api.com/summary");
+    response2 = await axios.get("https://disease.sh/v3/covid-19/countries");
+    console.log(response2.data)
     if(!country){
-        response = await axios.get(`https://covid19.mathdro.id/api/daily`);
+        const response = await axios.get(`https://disease.sh/v3/covid-19/all`);
         
         //response3 = await axios.get("https://api.covid19api.com/summary");
-        console.log(response2.data);
+        console.log(response.data);
 
-        let confirmedVal = response2.data.Global.TotalConfirmed;
-        let recoveredVal = response2.data.Global.TotalRecovered;
-        let deathVal = response2.data.Global.TotalDeaths;
-        let activeVal = confirmedVal - recoveredVal - deathVal;
-
+        let confirmedVal = response.data.cases;
+        let recoveredVal = response.data.recovered;
+        let deathVal = response.data.deaths;
+        let activeVal = response.data.active;
+    
         let totalcon = recoveredVal + deathVal + activeVal;
-        let recper = (recoveredVal/totalcon * 100).toFixed(2);
-        let deaper = (deathVal/totalcon * 100).toFixed(2);
-        let actper = (activeVal/totalcon * 100).toFixed(2);
-
+        let recper = (recoveredVal / totalcon * 100).toFixed(2);
+        let deaper = (deathVal / totalcon * 100).toFixed(2);
+        let actper = (activeVal / totalcon * 100).toFixed(2);
+    
         confirmed.textContent = numberWithCommas(confirmedVal);
-        active.textContent = numberWithCommas(activeVal)+"  ("+actper+" %)";
-        recovered.textContent = numberWithCommas(recoveredVal)+"  ("+recper+" %)";
-        death.textContent = numberWithCommas(deathVal)+"  ("+deaper+" %)";
+        active.textContent = numberWithCommas(activeVal) + " (" + actper + " %)";
+        recovered.textContent = numberWithCommas(recoveredVal) + " (" + recper + " %)";
+        death.textContent = numberWithCommas(deathVal) + " (" + deaper + " %)";
 
-        
+        response3 = await axios.get("https://disease.sh/v3/covid-19/historical/all?lastdays=all");
 
-        let carr = [];
-        let darr = [];
-        let narr = [];
-        let datearr = [];
+        let carr = []; // cases
+        let darr = []; // death
+        let narr = []; // new cases
+        let datearr = []; // date
 
-        for(let i = 0;i<response.data.length;i++)
+        let res3_data = response3.data;
+        carr = Object.values(res3_data.cases)
+        darr = Object.values(res3_data.deaths)
+        datearr = Object.keys(res3_data.cases)
+        recovarr = Object.values(res3_data.recovered)
+
+        let length = carr.length;
+        console.log(length);
+        console.log(Object.keys(res3_data))
+
+
+
+        for(let i = 0;i<length;i++)
         {
-            carr[i] = response.data[i].confirmed.total;
-            darr[i] = response.data[i].deaths.total;
             if(i === 0)
                 narr[i] = carr[i];
             else
                 narr[i] = carr[i] - carr[i-1];
-            datearr[i] = datef(response.data[i].reportDate);
         }
         graphContainer.innerHTML=`
         <div><canvas id="myChartp" class="pie"></canvas></div>
@@ -59,76 +69,7 @@ const setData = async (country) =>{
             <div class="small-graph">
                 <div><canvas id="myChart2"></canvas></div>
                 <div><canvas id="myChart3"></canvas></div>
-            </div>
-        `;
-
-        //pie chart
-        var ctxp = document.getElementById('myChartp').getContext('2d');
-
-        drawPie(ctxp,[activeVal,recoveredVal,deathVal]);
-
-        let ctx1 = document.getElementById('myChart1').getContext('2d');
-        let ctx2 = document.getElementById('myChart2').getContext('2d');
-        let ctx3 = document.getElementById('myChart3').getContext('2d');
-        
-        drawChart(ctx1,"line",datearr,carr,"Confirmed","rgb(255, 109, 0, 0.3)","rgb(255, 109, 0)");
-        drawChart(ctx2,"line",datearr,darr,"Death","rgb(66, 66, 66, 0.3)","rgb(66, 66, 66)");
-        drawChart(ctx3,"bar",datearr,narr,"New Cases","rgb(255, 183, 77, 0.9)","rgb(255, 183, 77)");
-
-    }
-    else{
-        data = await fetchData(`total/country/${country.Slug}`);
-        console.log(data);
-        let confirmedVal = data[data.length-1].Confirmed;
-        let activeVal = data[data.length-1].Active;
-        let recoveredVal = data[data.length-1].Recovered;
-        let deathVal = data[data.length-1].Deaths;
-
-        let totalcon = recoveredVal + deathVal + activeVal;
-        let recper = (recoveredVal/totalcon * 100).toFixed(2);
-        let deaper = (deathVal/totalcon * 100).toFixed(2);
-        let actper = (activeVal/totalcon * 100).toFixed(2);
-
-        confirmed.textContent = numberWithCommas(confirmedVal);
-        active.textContent = numberWithCommas(activeVal)+"  ("+actper+" %)";
-        recovered.textContent = numberWithCommas(recoveredVal)+"  ("+recper+" %)";
-        death.textContent = numberWithCommas(deathVal)+"  ("+deaper+" %)";
-        
-
-        let carr = [];
-        let aarr = [];
-        let rarr = [];
-        let darr = [];
-        let narr = [];
-        let datearr = [];
-        let j = 0;
-        for(let i = 0;i<data.length;i++)
-        {
-            if(data[i].Confirmed>0)
-            {
-                carr[j++] = data[i].Confirmed;
-                aarr[j-1] = data[i].Active;
-                rarr[j-1] = data[i].Recovered;
-                darr[j-1] = data[i].Deaths;
-                if(j==1)
-                    narr[j-1] = carr[j-1];
-                else
-                    narr[j-1] = carr[j-1]-carr[j-2];
-                datearr[j-1] = datef(data[i].Date);
-            }
-        }
-        console.log(datearr);
-
-        graphContainer.innerHTML=`
-        <div><canvas id="myChartp" class="pie"></canvas></div>
-            <div><canvas id="myChart1"></canvas></div>
-            <div class="small-graph">
-                <div><canvas id="myChart2"></canvas></div>
-                <div><canvas id="myChart3"></canvas></div>
-            </div>
-            <div class="small-graph">
                 <div><canvas id="myChart4"></canvas></div>
-                <div><canvas id="myChart5"></canvas></div>
             </div>
         `;
 
@@ -141,26 +82,50 @@ const setData = async (country) =>{
         let ctx2 = document.getElementById('myChart2').getContext('2d');
         let ctx3 = document.getElementById('myChart3').getContext('2d');
         let ctx4 = document.getElementById('myChart4').getContext('2d');
-        let ctx5 = document.getElementById('myChart5').getContext('2d');
 
+        
         drawChart(ctx1,"line",datearr,carr,"Confirmed","rgb(255, 109, 0, 0.3)","rgb(255, 109, 0)");
-        drawChart(ctx2,"line",datearr,aarr,"Active","rgb(244, 67, 54, 0.3)","rgb(244, 67, 54)");
-        drawChart(ctx3,"line",datearr,rarr,"Recovered","rgb(104, 159, 56, 0.3)","rgb(104, 159, 56)");
-        drawChart(ctx4,"line",datearr,darr,"Death","rgb(66, 66, 66, 0.3)","rgb(66, 66, 66)");
-        drawChart(ctx5,"bar",datearr,narr,"New Cases","rgb(255, 183, 77, 0.9)","rgb(255, 183, 77)");
+        drawChart(ctx2,"line",datearr,darr,"Death","rgb(66, 66, 66, 0.3)","rgb(66, 66, 66)");
+        drawChart(ctx3,"bar",datearr,narr,"New Cases","rgb(255, 183, 77, 0.9)","rgb(255, 183, 77)");
+
+    }
+    else{
+        data = await fetchData(`countries/${country.ISO2}`);
+        console.log(data);
+
+        let confirmedVal = data.cases;
+        let activeVal = data.active;
+        let recoveredVal = data.recovered;
+        let deathVal = data.deaths;
+
+        let totalcon = recoveredVal + deathVal + activeVal;
+        let recper = (recoveredVal / totalcon * 100).toFixed(2);
+        let deaper = (deathVal / totalcon * 100).toFixed(2);
+        let actper = (activeVal / totalcon * 100).toFixed(2);
+
+        confirmed.textContent = numberWithCommas(confirmedVal);
+        active.textContent = numberWithCommas(activeVal) + " (" + actper + " %)";
+        recovered.textContent = numberWithCommas(recoveredVal) + " (" + recper + " %)";
+        death.textContent = numberWithCommas(deathVal) + " (" + deaper + " %)";
+
+        graphContainer.innerHTML=`
+        <div><canvas id="myChartp" class="pie"></canvas></div>
+        `;
+
+        //pie chart
+        var ctxp = document.getElementById('myChartp').getContext('2d');
+
+        drawPie(ctxp,[activeVal,recoveredVal,deathVal]);
     }
 
     $(document).ready(function() {
         $('#example').DataTable( {
-            data: response2.data.Countries,
+            data: response2.data,
             columns: [
-                { "data": "Country" },
-                { "data": "TotalConfirmed" },
-                { "data": "TotalDeaths" },
-                { "data": "TotalRecovered" },
-                { "data": "NewConfirmed" },
-                { "data": "NewDeaths" },
-                { "data": "NewRecovered" },
+                { "data": "country" },
+                { "data": "cases" },
+                { "data": "deaths" },
+                { "data": "recovered" },
             ]
         } );
     } );
